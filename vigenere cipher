@@ -1,0 +1,49 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <ctype.h>
+
+#define ALPHABET_SIZE 26
+
+void encrypt(char plaintext[], int key[], char ciphertext[]) {
+    int keyLen = strlen(plaintext);
+    for (int i = 0; i < keyLen; i++) {
+        if (isalpha(plaintext[i])) {
+            int shift = key[i % keyLen]; // Retrieve the shift from the key stream
+            char base = isupper(plaintext[i]) ? 'A' : 'a'; // Determine the base character ('A' for uppercase, 'a' for lowercase)
+            ciphertext[i] = ((plaintext[i] - base + shift) % ALPHABET_SIZE) + base; // Perform the shift and wrap around
+        } else {
+            ciphertext[i] = plaintext[i]; // Preserve non-alphabetic characters
+        }
+    }
+    ciphertext[keyLen] = '\0'; // Null-terminate the ciphertext string
+}
+
+void decrypt(char ciphertext[], int key[], char plaintext[]) {
+    int keyLen = strlen(ciphertext);
+    for (int i = 0; i < keyLen; i++) {
+        if (isalpha(ciphertext[i])) {
+            int shift = key[i % keyLen]; // Retrieve the shift from the key stream
+            char base = isupper(ciphertext[i]) ? 'A' : 'a'; // Determine the base character ('A' for uppercase, 'a' for lowercase)
+            plaintext[i] = ((ciphertext[i] - base - shift + ALPHABET_SIZE) % ALPHABET_SIZE) + base; // Perform the reverse shift and wrap around
+        } else {
+            plaintext[i] = ciphertext[i]; // Preserve non-alphabetic characters
+        }
+    }
+    plaintext[keyLen] = '\0'; // Null-terminate the plaintext string
+}
+
+int main() {
+    char plaintext[] = "sendmoremoney";
+    int key[] = {9, 0, 1, 7, 23, 15, 21, 14, 11, 11, 2, 8, 9};
+    char ciphertext[strlen(plaintext) + 1];
+    char decryptedPlaintext[strlen(plaintext) + 1];
+
+    encrypt(plaintext, key, ciphertext);
+    printf("Ciphertext: %s\n", ciphertext);
+
+    decrypt(ciphertext, key, decryptedPlaintext);
+    printf("Decrypted Plaintext: %s\n", decryptedPlaintext);
+
+    return 0;
+}
