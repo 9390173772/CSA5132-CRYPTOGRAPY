@@ -1,0 +1,28 @@
+#include <stdio.h>
+int gcd(int a, int b) {
+    if (b == 0)
+        return a;
+    return gcd(b, a % b);
+}
+int areCoprime(int a, int b) {
+    return gcd(a, b) == 1;
+}
+void validAValues() {
+    int b;
+    printf("Enter the value of b: ");
+    scanf("%d", &b);
+
+    printf("Valid values of a for the affine Caesar cipher with b = %d:\n", b);
+    for (int a = 1; a < 26; ++a) {
+        if (areCoprime(a, 26))
+            printf("%d ", a);
+    }
+    printf("\n");
+}
+int main() {
+    printf("a. Are there any limitations on the value of b?\n");
+    printf("Answer: Yes, b must be relatively prime to 26.\n\n");
+    printf("b. Determine which values of a are not allowed.\n");
+    validAValues();
+    return 0;
+}
