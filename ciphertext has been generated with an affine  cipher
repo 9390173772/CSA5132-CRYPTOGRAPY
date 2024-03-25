@@ -1,0 +1,50 @@
+#include <stdio.h>
+int modInverse(int a, int m) {
+    a = a % m;
+    for (int x = 1; x < m; x++)
+        if ((a * x) % m == 1)
+            return x;
+    return -1;
+}
+void decryptAffineCipher(int a, int b, char cipherText[]) {
+    int m = 26; 
+    int aInverse = modInverse(a, m);
+    if (aInverse == -1) {
+        printf("Affine decryption not possible with the given key.\n");
+        return;
+    }
+    for (int i = 0; cipherText[i] != '\0'; ++i) {
+        if (cipherText[i] >= 'A' && cipherText[i] <= 'Z') {
+            int c = cipherText[i] - 'A';
+            int plainText = (aInverse * (c - b + m)) % m;
+            if (plainText < 0)
+                plainText += m;
+            printf("%c", 'A' + plainText);
+        } else if (cipherText[i] >= 'a' && cipherText[i] <= 'z') {
+            int c = cipherText[i] - 'a';
+            int plainText = (aInverse * (c - b + m)) % m;
+            if (plainText < 0)
+                plainText += m;
+            printf("%c", 'a' + plainText);
+        } else {
+            printf("%c", cipherText[i]);
+        }
+    }
+    printf("\n");
+}
+
+int main() {
+    char cipherText[] = "BUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUBUB";
+
+    int aInverse = modInverse(1, 26);
+    if (aInverse == -1) {
+        printf("Affine decryption not possible with the given key.\n");
+        return 1;
+    }
+    int b = (-4 * aInverse + 1) % 26;
+    if (b < 0)
+        b += 26;
+    decryptAffineCipher(1, b, cipherText);
+
+    return 0;
+}
