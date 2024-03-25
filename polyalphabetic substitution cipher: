@@ -1,0 +1,35 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+void polyalphabeticCipher(char message[], char key[]) {
+    int i, j, keyLen, messageLen;
+    char encrypted[100] = "";
+    keyLen = strlen(key);
+    messageLen = strlen(message);
+    for (i = 0, j = 0; i < messageLen; ++i) {
+        if (isalpha(message[i])) {
+            char base;
+            if (islower(message[i]))
+                base = 'a';
+            else
+                base = 'A';
+            int shift = tolower(key[j % keyLen]) - 'a'; // Calculate shift based on key
+            encrypted[i] = base + ((tolower(message[i]) - base + shift) % 26); // Apply shift and wrap around
+            ++j; // Move to next character in key
+        } else {
+            encrypted[i] = message[i]; // Non-alphabetic characters remain unchanged
+        }
+    }
+    printf("Encrypted message: %s\n", encrypted);
+}
+int main() {
+    char message[100], key[100];
+    printf("Enter message: ");
+    fgets(message, sizeof(message), stdin);
+    message[strcspn(message, "\n")] = '\0';
+    printf("Enter key: ");
+    fgets(key, sizeof(key), stdin);
+    key[strcspn(key, "\n")] = '\0';
+    polyalphabeticCipher(message, key);
+    return 0;
+}
