@@ -1,0 +1,63 @@
+#include <stdio.h>
+#define SIZE 2
+int determinant(int matrix[][SIZE]) {
+    return matrix[0][0] * matrix[1][1] - matrix[0][1] * matrix[1][0];
+}
+int modInverse(int a, int m) {
+    for (int x = 1; x < m; x++) {
+        if (((a % m) * (x % m)) % m == 1) {
+            return x;
+        }
+    }
+    return -1;
+}
+void adjugate(int matrix[][SIZE], int adj[][SIZE]) {
+    adj[0][0] = matrix[1][1];
+    adj[0][1] = -matrix[0][1];
+    adj[1][0] = -matrix[1][0];
+    adj[1][1] = matrix[0][0];
+}
+void inverse(int matrix[][SIZE], int inv[][SIZE], int det, int mod) {
+    int adj[SIZE][SIZE];
+    adjugate(matrix, adj);
+    int invDet = modInverse(det, mod);
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            inv[i][j] = (adj[i][j] * invDet) % mod;
+            if (inv[i][j] < 0) {
+                inv[i][j] += mod; 
+            }
+        }
+    }
+}
+void multiply(int A[][SIZE], int B[][SIZE], int C[][SIZE], int mod) {
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            C[i][j] = 0;
+            for (int k = 0; k < SIZE; k++) {
+                C[i][j] += A[i][k] * B[k][j];
+            }
+            C[i][j] %= mod;
+        }
+    }
+}
+
+int main() {
+    int plaintexts[SIZE][SIZE] = {{0, 1}, {1, 0}}; 
+    int ciphertexts[SIZE][SIZE] = {{15, 10}, {7, 22}};
+    int det = determinant(plaintexts);
+    int inv[SIZE][SIZE];
+    inverse(plaintexts, inv, det, 26);
+
+    int key[SIZE][SIZE];
+    multiply(ciphertexts, inv, key, 26);
+    printf("Recovered Key Matrix:\n");
+    for (int i = 0; i < SIZE; i++) {
+        for (int j = 0; j < SIZE; j++) {
+            printf("%d ", key[i][j]);
+        }
+        printf("\n");
+    }
+
+    return 0;
+}
