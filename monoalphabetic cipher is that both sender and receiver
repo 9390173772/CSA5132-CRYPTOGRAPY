@@ -1,0 +1,66 @@
+#include <stdio.h>
+#include <string.h>
+#include <ctype.h>
+void generateCipherSequence(char keyword[], char cipherSequence[]) {
+    int i, j, index = 0;
+    int keywordLength = strlen(keyword);
+    char alphabet[26] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    for (i = 0; i < keywordLength; i++) {
+        cipherSequence[index++] = toupper(keyword[i]);
+    }
+    for (i = 0; i < 26; i++) {
+        if (!strchr(keyword, alphabet[i])) {
+            cipherSequence[index++] = alphabet[i];
+        }
+    }
+    cipherSequence[index] = '\0';
+}
+void encryptMonoalphabetic(char plaintext[], char keyword[], char ciphertext[]) {
+    char cipherSequence[27]; 
+    generateCipherSequence(keyword, cipherSequence);
+
+    for (int i = 0; plaintext[i] != '\0'; i++) {
+        if (isalpha(plaintext[i])) {
+            if (islower(plaintext[i])) {
+                ciphertext[i] = tolower(cipherSequence[plaintext[i] - 'a']);
+            } else {
+                ciphertext[i] = toupper(cipherSequence[plaintext[i] - 'A']);
+            }
+        } else {
+            ciphertext[i] = plaintext[i]; 
+        }
+    }
+    ciphertext[strlen(plaintext)] = '\0';
+}
+void decryptMonoalphabetic(char ciphertext[], char keyword[], char plaintext[]) {
+    char cipherSequence[27]; 
+    generateCipherSequence(keyword, cipherSequence);
+
+    for (int i = 0; ciphertext[i] != '\0'; i++) {
+        if (isalpha(ciphertext[i])) {
+            char *pos;
+            if (islower(ciphertext[i])) {
+                pos = strchr(cipherSequence, ciphertext[i]);
+                plaintext[i] = 'a' + (pos - cipherSequence);
+            } else {
+                pos = strchr(cipherSequence, tolower(ciphertext[i]));
+                plaintext[i] = 'A' + (pos - cipherSequence);
+            }
+        } else {
+            plaintext[i] = ciphertext[i]; 
+        }
+    }
+    plaintext[strlen(ciphertext)] = '\0';
+}
+
+int main() {
+    char keyword[] = "CIPHER";
+    char plaintext[] = "HELLO WORLD";
+    char ciphertext[100];
+    char decryptedtext[100];
+    encryptMonoalphabetic(plaintext, keyword, ciphertext);
+    printf("Encrypted text: %s\n", ciphertext);
+    decryptMonoalphabetic(ciphertext, keyword, decryptedtext);
+    printf("Decrypted text: %s\n", decryptedtext);
+    return 0;
+}
